@@ -26,6 +26,10 @@ Import-Module NTFSSecurity
 
 #region variables
 
+# This is the name of the NetBIOS Active Diectory domain. Because in ACLs the 
+# format "netbios domain name\SamAccountName" is used we need the domain name
+# Of course we could get the name from the Active Directory context some where
+# but I don't have the time to search for the attributes and interfaces :-) 
 $netBiosDomainName = "mydomain"
 
 #endregion variables
@@ -56,9 +60,9 @@ if (!(Is-Admin))
 }
 
 # If you need to process all folder comment this line and the where filter on the second line
-$profileFolderName = Read-Host "Please enter the name of the folder under 'F:\Persönlich' whose permissions you want to reset"
+$profileFolderName = Read-Host "Please enter the name of the folder under 'F:\RoamingProfiles' whose permissions you want to reset"
 
-$profileFolders = Get-ChildItem -Path "f:\Persönlich" -Directory | Where {$_.Name -like $profileFolderName}
+$profileFolders = Get-ChildItem -Path "f:\RoamingProfiles" -Directory | Where-Object {$_.Name -like $profileFolderName}
 
 if (!$profileFolders)
 {
@@ -77,6 +81,7 @@ foreach ($profileFolder in $profileFolders)
 
     $pathName = $profileFolder.PSChildName.ToString().ToLower()
 
+    # Cleanup the folder names
     $userName = $pathName -replace ".v3"
     $userName = $pathName -replace ".v2"
     $userName = $pathName -replace ".star-trek"
